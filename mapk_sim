@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr  5 16:09:17 2023
+
+@author: sweis
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+
+def ode_system_mapk(t, c_kin_list):
+    MKKK, MKKK_P, MKK, MKK_P, MKK_PP, MAPK, MAPK_P, MAPK_PP = c_kin_list
+    #constants
+    n = 2.5
+    k3 = 0.025
+    k4 = 0.025
+    k7 = 0.025
+    k8 = 0.025
+    Ki = 18.
+    v1 = 2.5
+    v2 = 0.25
+    v5 = 0.75
+    v6 = 0.75
+    v9 = 1.25
+    v10 = 1.25
+    K = [10., 40., 100., 100., 100., 100., 100., 100., 100., 100.]
+    
+    #rates
+    rate1 = v1*MKKK/((1+(MAPK_PP/Ki)**n)*(K[0]+MKKK))
+    rate2 = v2*MKKK_P/(K[1]+MKKK_P)
+    rate3 = k3*MKKK_P * MKK/(K[2]+MKK)
+    rate4 = k4*MKKK_P * MKK_P/(K[3]+MKK_P)
+    rate5 = v5*MKK_PP/(K[4]+MKK_PP)
+    rate6 = v6*MKK_P/(K[5]+MKK_P)
+    rate7 = k7*MKK_PP*MAPK/(K[6]+MAPK)
+    rate8 = k8*MKK_PP*MAPK_P/(K[7]+MAPK_P)
+    rate9 = v9*MAPK_PP/(K[8]+MAPK_PP)
+    rate10 = v10*MAPK_P/(K[9]+MAPK_P)
+    
+    #d_kin/d_t
+    d_MKKK = rate2 - rate1
+    d_MKKK_P = rate1 - rate2
+    d_MKK = rate6 - rate3
+    d_MKK_P = rate3 + rate5 - rate4 - rate6
+    d_MKK_PP = rate4 - rate5
+    d_MAPK = rate10 - rate7
+    d_MAPK_P = rate7 + rate9 - rate8 - rate10
+    d_MAPK_PP = rate8 - rate9
+    
+    return [d_MKKK, d_MKKK_P, d_MKK, d_MKK_P, d_MKK_PP, d_MAPK, d_MAPK_P, d_MAPK_PP]
+
+t0_MKKK = 100.
+t0_MKKK_P = 0.
+t0_MKK = 300.
+t0_MKK_P = 0.
+t0_MKK_PP = 0.
+t0_MAPK = 300.
+t0_MAPK_P = 0.
+t0_MAPK_PP = 0.
+
+t0 = 0
+t_end_minutes = 200
+t_end = t_end_minutes * 60
+stepps = 400
+t_list = np.linspace(t0, t_end, stepps)
+scipy_rk45 = solve_ivp(ode_system_mapk, 
+                       [t0, t_end], 
+                       [t0_MKKK, t0_MKKK_P, t0_MKK, t0_MKK_P, t0_MKK_PP, t0_MAPK, t0_MAPK_P, t0_MAPK_PP],
+                       dense_output=True,
+                       rtol=1e-3,
+                       atol=1e-6,
+                       method='RK45')
+solution_list = scipy_rk45.sol(t_list)
+print(type(solution_list))
+print(solution_list[0])
+
+
+max_t = np.max(t_list)
+max_t = max_t/60
+max_t = max_t/20
+ticks = np.arange(0, max_t + 1)
+labels = [int(x*20) for x in ticks]
+x_ticks = ticks * 20 * 60
+fig, ax = plt.subplots()
+ax.plot(t_list, solution_list[0], label='MKKK')
+ax.plot(t_list, solution_list[1], label='MKKK_P')
+ax.plot(t_list, solution_list[2], label='MKK')
+ax.plot(t_list, solution_list[3], label='MKK_P')
+ax.plot(t_list, solution_list[4], label='MKK_PP')
+ax.plot(t_list, solution_list[5], label='MAPK')
+ax.plot(t_list, solution_list[6], label='MAPK_P')
+ax.plot(t_list, solution_list[7], label='MAPK_PP')
+ax.set_xticks(x_ticks, labels=labels)
+ax.legend(loc='upper right')
+plt.show()

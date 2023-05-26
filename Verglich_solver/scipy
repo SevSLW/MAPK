@@ -1,0 +1,312 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr  3 11:05:06 2023
+
+@author: sweis
+
+Vergleich von methoden ODE Solver:
+    
+Gleichungssytem:
+    x'= y - x
+    y'= 4 x - y
+    
+    chemistry
+    a + b <=> c
+    a' = k2 * c - k1 * a * b
+    b' = k2 * c - k1 * a * b
+    c' = -k2 * c + k1 * a * b
+    
+    x' = x +2 * y +1
+    y' = -x + y + t
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+from timeit import timeit
+from sympy import symbols, Eq, Function
+from sympy import *
+from sympy.solvers.ode.systems import dsolve_system
+import tensorflow as tf
+import tensorflow_probability as tfp
+import torch
+from torchdiffeq import odeint
+
+from neurodiffeq import diff
+from neurodiffeq.solvers import Solver1D, Solver2D
+from neurodiffeq.conditions import IVP, DirichletBVP2D
+from neurodiffeq.networks import FCNN, SinActv
+from neurodiffeq.ode import solve_system
+
+def fault_mean (value_list1, value_list2):
+    fault_x = [np.abs(value_list1[i] - value) for i, value in enumerate(value_list2)]
+    fault_x_mean = np.mean(fault_x)
+    print(fault_x_mean)
+    
+    
+
+#%% Beispiel 3
+def ode_system3(t, xy:list):
+    x = xy[0]
+    y = xy[1]
+    dxdt = x+ 2. * y +1.
+    dydt = -x+y+t
+    return [dxdt, dydt]
+
+times_number = 1
+t0 = 0.
+x0 = 2.
+y0 = -1.
+
+y_anal = lambda t: - np.exp(t)*np.sin(2**(1/2)*t)*((17*2**(1/2))/18 + (np.exp(-t)*(4*np.sin(2**(1/2)*t) + 2**(1/2)*np.cos(2**(1/2)*t) + 6*t*np.sin(2**(1/2)*t) + 6*2**(1/2)*t*np.cos(2**(1/2)*t)))/18) - np.exp(t)*np.cos(2**(1/2)*t)*((np.exp(-t)*(4*np.cos(2**(1/2)*t) - 2**(1/2)*np.sin(2**(1/2)*t) + 6*t*np.cos(2**(1/2)*t) - 6*2**(1/2)*t*np.sin(2**(1/2)*t)))/18 + 7/9)
+x_anal = lambda t: 2**(1/2)*np.exp(t)*np.cos(2**(1/2)*t)*((17*2**(1/2))/18 + (np.exp(-t)*(4*np.sin(2**(1/2)*t) + 2**(1/2)*np.cos(2**(1/2)*t) + 6*t*np.sin(2**(1/2)*t) + 6*2**(1/2)*t*np.cos(2**(1/2)*t)))/18) - 2**(1/2)*np.exp(t)*np.sin(2**(1/2)*t)*((np.exp(-t)*(4*np.cos(2**(1/2)*t) - 2**(1/2)*np.sin(2**(1/2)*t) + 6*t*np.cos(2**(1/2)*t) - 6*2**(1/2)*t*np.sin(2**(1/2)*t)))/18 + 7/9)
+t0 = 0
+t_end = 6
+n_stepps = 100
+t_list = np.linspace(t0, t_end, n_stepps)
+x_anal_list = [x_anal(i) for i in t_list]
+y_anal_list = [y_anal(i) for i in t_list]
+
+#%%Scipy
+method = 'RK45'
+numeric_solution = solve_ivp(ode_system3, 
+                             [t0, t_end], 
+                             [x0, y0], 
+                             method=method, 
+                             dense_output=False, 
+                             atol=1e-6,
+                             rtol=1e-3)
+time_scipy_rk45 = timeit(lambda: solve_ivp(ode_system3, [t0, t_end], [x0, y0], method=method, dense_output=False),
+                         number = times_number)
+print(f'performance scipy RK45 = {time_scipy_rk45}')
+fault_mean([x_anal(i) for i in numeric_solution.t], numeric_solution.y[0])
+fault_mean([y_anal(i) for i in numeric_solution.t], numeric_solution.y[1])
+# numeric_solution_sol = numeric_solution.sol(t_list)
+x_scipy = numeric_solution.y[0]
+y_scipy = numeric_solution.y[1]
+# fault_x = [np.abs(x_anal_list[i] - x_scipy[i]) for i, value in enumerate(t_list)]
+# fault_x_mean = np.mean(fault_x)
+# print(fault_x_mean)
+# fault_y = [np.abs(y_anal_list[i] - y_scipy[i]) for i, value in enumerate(t_list)]
+# fault_y_mean = np.mean(fault_y)
+# print(fault_y_mean)
+
+
+fig,ax = plt.subplots()
+ax.plot(t_list, x_anal_list, color='r')
+ax.plot(t_list, y_anal_list, color='r')
+ax.plot(numeric_solution.t, numeric_solution.y[0], 'x', color = 'b')
+ax.plot(numeric_solution.t, numeric_solution.y[1], 'x', color = 'g')
+
+#%%Scipy BDF
+method = 'BDF'
+numeric_solution = solve_ivp(ode_system3, [t0, t_end], [x0, y0], method=method, dense_output=False)
+time_scipy_BDF = timeit(lambda: solve_ivp(ode_system3, [t0, t_end], [x0, y0], method=method, dense_output=False),
+                         number = times_number)
+print(f'performance scipy BDF = {time_scipy_BDF}')
+fault_mean([x_anal(i) for i in numeric_solution.t], numeric_solution.y[0])
+fault_mean([y_anal(i) for i in numeric_solution.t], numeric_solution.y[1])
+# numeric_solution_sol = numeric_solution.sol(t_list)
+x_scipy = numeric_solution.y[0]
+y_scipy = numeric_solution.y[1]
+# fault_x = [np.abs(x_anal_list[i] - x_scipy[i]) for i, value in enumerate(t_list)]
+# fault_x_mean = np.mean(fault_x)
+# print(fault_x_mean)
+# fault_y = [np.abs(y_anal_list[i] - y_scipy[i]) for i, value in enumerate(t_list)]
+# fault_y_mean = np.mean(fault_y)
+# print(fault_y_mean)
+
+
+fig,ax = plt.subplots()
+ax.plot(t_list, x_anal_list, color='r')
+ax.plot(t_list, y_anal_list, color='r')
+ax.plot(numeric_solution.t, numeric_solution.y[0], 'x', color = 'b')
+ax.plot(numeric_solution.t, numeric_solution.y[1], 'x', color = 'g')
+
+#%%Scipy DOP853
+method = 'DOP853'
+numeric_solution = solve_ivp(ode_system3, 
+                             [t0, t_end], 
+                             [x0, y0], 
+                             method=method, 
+                             dense_output=False,
+                             rtol=1e-3,
+                             atol=1e-6)
+time_scipy_DOP853 = timeit(lambda: solve_ivp(ode_system3, 
+                             [t0, t_end], 
+                             [x0, y0], 
+                             method=method, 
+                             dense_output=False,
+                             rtol=1e-3,
+                             atol=1e-6),
+                         number = times_number)
+print(f'performance scipy DOP853 = {time_scipy_DOP853}')
+fault_mean([x_anal(i) for i in numeric_solution.t], numeric_solution.y[0])
+fault_mean([y_anal(i) for i in numeric_solution.t], numeric_solution.y[1])
+# numeric_solution_sol = numeric_solution.sol(t_list)
+x_scipy = numeric_solution.y[0]
+y_scipy = numeric_solution.y[1]
+# fault_x = [np.abs(x_anal_list[i] - x_scipy[i]) for i, value in enumerate(t_list)]
+# fault_x_mean = np.mean(fault_x)
+# print(fault_x_mean)
+# fault_y = [np.abs(y_anal_list[i] - y_scipy[i]) for i, value in enumerate(t_list)]
+# fault_y_mean = np.mean(fault_y)
+# print(fault_y_mean)
+
+
+fig,ax = plt.subplots()
+ax.plot(t_list, x_anal_list, color='r')
+ax.plot(t_list, y_anal_list, color='r')
+ax.plot(numeric_solution.t, numeric_solution.y[0], 'x', color = 'b')
+ax.plot(numeric_solution.t, numeric_solution.y[1], 'x', color = 'g')
+
+#%%TensorFlowProbability Dormand
+@tf.function
+def ode_system3_tfp(t, xy:list):
+    x = xy[0]
+    y = xy[1]
+    dxdt = x+ tf.constant(2.) * y +tf.constant(1.)
+    dydt = -x+y+t
+    return tf.stack([dxdt, dydt])
+
+t_init = tf.constant(t0)
+x_init = tf.constant(x0)
+y_init = tf.constant(y0)
+
+num_sol_tfp_dormand = tf.function(tfp.math.ode.DormandPrince().solve)(ode_system3_tfp, t_init, tf.stack([x_init, y_init]),
+                                                                      solution_times=tfp.math.ode.ChosenBySolver(
+                                                                          tf.constant(t_end)))
+time_tfp_dormand = timeit(lambda: tf.function(tfp.math.ode.DormandPrince().solve)(ode_system3_tfp, t_init, tf.stack([x_init, y_init]),
+                                                                      solution_times=tfp.math.ode.ChosenBySolver(
+                                                                          tf.constant(t_end))), number=times_number)
+print(f'performance tfp Dormand = {time_tfp_dormand}')
+fault_mean([x_anal(i) for i in num_sol_tfp_dormand.times], [i[0] for i in num_sol_tfp_dormand.states])
+fault_mean([y_anal(i) for i in num_sol_tfp_dormand.times], [i[1] for i in num_sol_tfp_dormand.states])
+
+fig,ax = plt.subplots()
+ax.plot(t_list, x_anal_list, color='r')
+ax.plot(t_list, y_anal_list, color='r')
+# ax.plot(t_list, x_scipy, '.', color = 'b')
+# ax.plot(t_list, y_scipy, '.', color = 'g')
+
+ax.plot(num_sol_tfp_dormand.times, [i[0] for i in num_sol_tfp_dormand.states], 'x')
+ax.plot(num_sol_tfp_dormand.times, [i[1] for i in num_sol_tfp_dormand.states], 'x')
+
+#%%TensorflowProbability BDF
+num_sol_tfp = tf.function(tfp.math.ode.BDF().solve)(ode_system3_tfp, t_init, [x_init, y_init],
+                                       solution_times=tfp.math.ode.ChosenBySolver(
+                                           tf.constant(t_end)) 
+                                       )
+time_tfp_BDF = timeit(lambda: tf.function(tfp.math.ode.BDF().solve)(ode_system3_tfp, t_init, [x_init, y_init],
+                                        solution_times=tfp.math.ode.ChosenBySolver(
+                                            tf.constant(t_end)) 
+                                        ), number=times_number)
+print(f'performance tfp BDF = {time_tfp_BDF}')
+fault_mean([x_anal(i) for i in num_sol_tfp.times], num_sol_tfp.states[0])
+fault_mean([y_anal(i) for i in num_sol_tfp.times], num_sol_tfp.states[1])
+
+
+
+
+
+
+
+fig,ax = plt.subplots()
+ax.plot(t_list, x_anal_list, color='r')
+ax.plot(t_list, y_anal_list, color='r')
+# ax.plot(t_list, x_scipy, '.', color = 'b')
+# ax.plot(t_list, y_scipy, '.', color = 'g')
+
+# ax.plot(num_sol_tfp_dormand.times, [i[0] for i in num_sol_tfp_dormand.states], 'x')
+# ax.plot(num_sol_tfp_dormand.times, [i[1] for i in num_sol_tfp_dormand.states], 'x')
+
+ax.plot(num_sol_tfp.times, num_sol_tfp.states[0], 'x')
+ax.plot(num_sol_tfp.times, num_sol_tfp.states[1], 'x')
+
+#%%Torchdiff
+
+def ode_system3_torch(t, xy:list):
+    x = xy[0]
+    y = xy[1]
+    dxdt = torch.Tensor([x+ 2. * y +1.])
+    dydt = torch.Tensor([-x+y+t])
+    return torch.cat([dxdt, dydt])
+
+t_list_torch = np.linspace(t0, t_end, 13)
+
+x_init = torch.Tensor([x0])
+y_init = torch.Tensor([y0])
+num_sol_torch = odeint(ode_system3_torch, 
+                       torch.cat([x_init, y_init]), 
+                       torch.Tensor(t_list_torch),
+                       method='dopri5',
+                       rtol=1e-3,
+                       atol=1e-6).numpy()
+
+performance_torchdiff = timeit(lambda: odeint(ode_system3_torch, 
+                       torch.cat([x_init, y_init]), 
+                       torch.Tensor(t_list_torch),
+                       method='dopri5',
+                       rtol=1e-3,
+                       atol=1e-6).numpy(), number=times_number)
+print(f'performance Torchdiff = {performance_torchdiff}')
+fault_mean([x_anal(i) for i in t_list_torch], [i[0] for i in num_sol_torch])
+fault_mean([y_anal(i) for i in t_list_torch], [i[1] for i in num_sol_torch])
+fig,ax = plt.subplots()
+ax.plot(t_list, x_anal_list, color='r')
+ax.plot(t_list, y_anal_list, color='r')
+ax.plot(t_list_torch, [i[0] for i in num_sol_torch], 'x', color = 'b')
+ax.plot(t_list_torch, [i[1] for i in num_sol_torch], 'x', color = 'g')
+
+#%% Neurodiff  x' = x +2 * y +1  y' = -x + y + t
+
+# # ode_neurodiff = lambda x, y, t: [diff(x, t, order=1) -x -2*y -1,
+# #                                  diff(y, t, order=1) +x -y -t,]
+# def ode_system_neurodiff(u, v, t):
+#     return [diff(u,t) - (u +2. *v +1.), diff(v,t) - (-u + v +t)]
+# x_init = IVP(t_0=t0, u_0=x0)
+# y_init = IVP(t_0=t0, u_0=y0)
+# conditions = [x_init, y_init]
+# nets = [FCNN(actv=SinActv), FCNN(actv=SinActv)]
+# solver = solve_system(ode_system_neurodiff, conditions, t_min=t0, t_max=t_end, max_epochs=5000)
+
+# t_list_neurodiff = np.linspace(t0, t_end, 100)
+# u, v = solver[0](t_list_neurodiff, to_numpy=True)
+# print(u)
+# print(v)
+
+# # batchsize=200
+
+# # net = ndenw.FCNN(
+# #     n_input_units=1,
+# #     n_output_units=2,
+# #     n_hidden_layers=3,
+# #     n_hidden_units=50,
+# #     actv=ndenw.SinActv)
+
+# # optimizer = torch.optim.Adam(net.parameters(), lr=0.003)
+
+# # num_sol_neurodiff, history = solve_system(
+# #     ode_system=ode_neurodiff,
+# #     conditions= [x_init, y_init],
+# #     t_min=t0,
+# #     t_max=t_end,
+# #     batch_size=batchsize,
+# #     max_epochs=1200,
+# #     return_best=True,
+# #     single_net = net,
+# #     optimizer=optimizer,
+# #     monitor=Monitor(t_min=t0, t_max=t_end, check_every=10))
+# # print(num_sol_neurodiff)
+# # num_sol_neurodiff = num_sol_neurodiff(t_list, as_type='np')
+# # print(num_sol_neurodiff)
+
+# #%%
+# fig,ax = plt.subplots()
+# # ax.plot(t_list, x_anal_list, color='r')
+# # ax.plot(t_list, y_anal_list, color='r')
+# ax.plot(t_list_neurodiff, u, 'x', color = 'b')
+# ax.plot(t_list_neurodiff, v, 'x', color = 'g')
+
+
+
