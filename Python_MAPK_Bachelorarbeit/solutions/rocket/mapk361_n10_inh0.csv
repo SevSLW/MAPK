@@ -1,0 +1,61 @@
+,name,-,mapk,"mapk, mkk, mkkk",mkk,mkk_pp,mkkk,mkkk_p,mkp_mapk,"mkp_mapk, mkp_mkk, mkp_mkkk",mkp_mkk,mkp_mkkk,ras,ras_active,signal_active,acc,time,cm,type,y
+0,mapk361_n10_inh0,0.286,1.0,0.6,1.0,0.692,1.0,0.714,0.804,1.0,0.886,0.723,1.0,0.512,1.0,0.746,0.901,"[[ 2  0  0  0  2  0  1  3  0  1  2  0  1  0]
+ [ 0  6  0  0  0  0  3  0  0  1  0  0  0  0]
+ [ 1  0  3  0  0  0  0  0  0  0  0  0  6  0]
+ [ 0  0  0  9  0  0  0  1  0  0  0  0  0  0]
+ [ 0  0  0  0 27  0  0  0  0  0  1  0  2  0]
+ [ 0  0  0  0  0  1  0  0  0  0  0  0  9  0]
+ [ 0  0  0  0  8  0 20  0  0  0  1  0  1  0]
+ [ 0  0  0  0  0  0  1 37  0  0  2  0  0  0]
+ [ 0  0  0  0  0  0  0  1  7  0  2  0  0  0]
+ [ 1  0  0  0  1  0  1  1  0 31  4  0  0  0]
+ [ 1  0  0  0  1  0  0  2  0  2 34  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  8  2  0]
+ [ 2  0  2  0  0  0  2  1  0  0  1  0 22  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10]]",rocket,"['mkp_mapk' 'ras_active' 'mapk, mkk, mkkk' '-' 'mapk, mkk, mkkk'
+ 'ras_active' 'ras_active' 'mapk, mkk, mkkk' 'ras_active' 'ras_active'
+ 'ras_active' 'mkp_mapk, mkp_mkk, mkp_mkkk' 'mkp_mkkk'
+ 'mkp_mapk, mkp_mkk, mkp_mkkk' 'mkp_mapk, mkp_mkk, mkp_mkkk'
+ 'mkp_mapk, mkp_mkk, mkp_mkkk' 'mkp_mkkk' 'mkp_mapk, mkp_mkk, mkp_mkkk'
+ 'mkp_mapk, mkp_mkk, mkp_mkkk' 'mkp_mapk, mkp_mkk, mkp_mkkk' 'mkp_mapk'
+ 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk'
+ 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk'
+ 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk'
+ 'mkp_mapk' 'mkp_mapk' 'mkp_mkkk' 'mkkk_p' 'mkp_mapk' 'mkp_mapk'
+ 'mkp_mkkk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk'
+ 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk'
+ 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mapk' 'mkp_mkk' 'mkp_mkk'
+ 'mkp_mkkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkk' 'mkp_mapk'
+ 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk'
+ 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' '-' 'mkk_pp' 'mkp_mkk' 'mkkk_p'
+ 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkk_pp'
+ 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk' 'mkp_mkk'
+ 'mkp_mkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkk_pp'
+ 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' '-'
+ 'mkp_mkkk' 'mkp_mkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk'
+ 'mkp_mkkk' 'mkp_mkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk'
+ 'mkp_mkkk' 'mkp_mkkk' 'mkp_mapk' 'mkp_mapk' 'mkp_mkkk' 'mkp_mkkk'
+ 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk'
+ 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkkk' 'mkp_mkk' 'mkkk_p' 'mapk'
+ 'mapk' 'mapk' 'mkkk_p' 'mapk' 'mapk' 'mapk' 'mkkk_p' 'mkk_pp' 'mkk_pp'
+ 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkp_mkkk' 'mkk_pp' 'mkk_pp' 'mkk_pp'
+ 'ras_active' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp'
+ 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp' 'mkk_pp'
+ 'mkk_pp' 'mkk_pp' 'mkk_pp' 'ras_active' 'mkk_pp' 'mkk' 'mkk' 'mkk' 'mkk'
+ 'mkk' 'mkk' 'mkk' 'mkp_mapk' 'mkk' 'mkk' 'mkk_pp' 'mkk_pp' 'mkkk_p'
+ 'mkkk_p' 'mkkk_p' 'mkkk_p' 'mkk_pp' 'mkkk_p' 'mkkk_p' 'mkkk_p' 'mkkk_p'
+ 'ras_active' 'mkk_pp' 'mkkk_p' 'mkkk_p' 'mkk_pp' 'mkkk_p' 'mkkk_p'
+ 'mkkk_p' 'mkk_pp' 'mkk_pp' 'mkp_mkkk' 'mkkk_p' 'mkkk_p' 'mkk_pp' 'mkkk_p'
+ 'mkkk_p' 'mkkk_p' 'mkkk_p' 'mkkk_p' 'ras_active' 'mkkk' 'ras_active'
+ 'ras_active' 'ras_active' 'ras_active' 'ras_active' 'ras_active'
+ 'ras_active' 'ras_active' 'ras_active' 'ras_active' 'ras_active'
+ 'ras_active' 'ras_active' 'ras_active' 'ras_active' '-' 'ras_active'
+ 'ras_active' 'ras_active' 'ras_active' 'ras_active' 'ras_active'
+ 'ras_active' 'ras_active' 'ras_active' 'ras_active' 'ras_active'
+ 'ras_active' 'ras' 'ras' 'ras' 'ras' 'ras' 'ras_active' 'ras'
+ 'ras_active' 'ras' 'ras' 'mapk, mkk, mkkk' 'mapk, mkk, mkkk' '-'
+ 'ras_active' 'mkkk_p' 'mkkk_p' 'mkp_mkkk' 'ras_active' 'ras_active'
+ 'mkp_mapk' 'signal_active' 'signal_active' 'signal_active'
+ 'signal_active' 'signal_active' 'signal_active' 'signal_active'
+ 'signal_active' 'signal_active' 'signal_active' 'mkp_mkk' 'ras_active'
+ 'mkp_mkkk' '-' 'mkkk_p' 'mkp_mapk' 'mkk_pp' '-' 'mkp_mapk' 'mkp_mkkk']"
